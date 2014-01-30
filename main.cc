@@ -41,6 +41,7 @@ int main () {
     estd::vector_t<double> rhs(n*n);
     estd::vector_t<double> solution(n*n);
 
+
     std::cout << "Setting RHS... " << std::flush;
     FDM::init_rhs(n,rhs,g_blatt1);
     //init_rhs(n,rhs,[](double x,double y){return x + y;});
@@ -51,7 +52,7 @@ int main () {
     
     std::cout << "Precision reached: " << x.first
         << "\nIterations needed: " << x.second << "\n"; 
-    //createVTKFile(n,solution.data());
+    createVTKFile(n,solution.data());
 
 }
 

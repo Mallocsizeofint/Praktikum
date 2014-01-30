@@ -8,7 +8,6 @@
 #include "matrix.hpp"
 #include "my_vector.hpp"
 
-
 //! contains a finite-differences library
 namespace FDM {
 
