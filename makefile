@@ -2,7 +2,7 @@ STANDARDFLAG = -std=c++11
 CXX = clang++
 CXXFLAGS = -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-float-equal $(STANDARDFLAG)
 LD  = clang++
-DEBUG = -DENABLE_RANGE_CHECK
+DEBUG = -DENABLE_RANGE_CHECK -O3
 RELEASE = -DNDEBUG -O3
 TARGET = blatt1.exe
 SOURCES := $(wildcard *.cc)        
@@ -10,7 +10,7 @@ MYOBJS := $(patsubst %.cc, %.o, $(SOURCES))
 KUSKOBJS = cputime.o createVTKFile.o
 OBJS = $(MYOBJS) $(KUSKOBJS)
 
-RELEASE_DEBUG_FLAGS = $(RELEASE)
+RELEASE_DEBUG_FLAGS = $(DEBUG)
 
 all: $(TARGET)
 

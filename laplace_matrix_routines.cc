@@ -446,30 +446,19 @@ std::pair<double,size_t> FDM::gauss_seidel (
     //dimension check:
     assert(f.size() == u.size() && u.size() == n*n);
 
-
-    //u=f;
     //variable to store the current acuracy
     double infnorm;
+
     //The gauss-seidel-method
     for(size_t i = 1; i <= itmax; ++i) {
         infnorm = 0;        
-        //calculate new iteration-vector
-       /*
+
+        //calculate new iteration-vector     
         infnorm = gauss_seidel_top_block(n,f,u);
-        infnorm = std::max(infnorm,
-            gauss_seidel_middle_blocks(n,f,u));
-        infnorm = std::max(infnorm,
-            gauss_seidel_top_block(n,f,u));
-        */
-for (size_t j = 0; j < n*n; ++j) {
-    double new_entry = gauss_seidel_entry(
-        n,f,u,j);
-    infnorm = std::max(infnorm,
-        std::abs(new_entry - u[j]));
-    u[j] = new_entry;
-}
+        infnorm = std::max(infnorm, gauss_seidel_middle_blocks(n,f,u));
+        infnorm = std::max(infnorm, gauss_seidel_bottom_block(n,f,u));
+        
         //Check convergence
-        //std::cout << i << " " << infnorm << std::endl;
         if (infnorm < epsmin)
             return {infnorm,i};
     }
@@ -494,30 +483,19 @@ std::pair<double,size_t> FDM::SOR (
     //convergence check
     assert((omega > 0) && (omega < 2));
 
-
-    //u=f;
     //variable to store the current acuracy
     double infnorm;
-    //The gauss-seidel-method
+
+    //The SOR-method
     for(size_t i = 1; i <= itmax; ++i) {
         infnorm = 0;        
         
-             infnorm = 0;        
-            //calculate new iteration-vector
-           
-            infnorm = SOR_top_block(n,f,u,omega);
-            infnorm = std::max(infnorm,
-                SOR_middle_blocks(n,f,u,omega));
-            infnorm = std::max(infnorm,
-                SOR_top_block(n,f,u,omega));
-            //Check convergence
-            //std::cout << i << " " << infnorm << std::endl;
-            if (infnorm < epsmin)
-                return {infnorm,i};
-        
+        //calculate new iteration-vector
+        infnorm = SOR_top_block(n,f,u,omega);
+        infnorm = std::max(infnorm, SOR_middle_blocks(n,f,u,omega));
+        infnorm = std::max(infnorm, SOR_bottom_block(n,f,u,omega));
 
         //Check convergence
-        //std::cout << i << " " << infnorm << std::endl;
         if (infnorm < epsmin)
             return {infnorm,i};
     }
@@ -595,7 +573,7 @@ std::pair<double,std::size_t> FDM::PCG (
     L.applyPrecond(direction);
 
     //PCG-specific helper vector
-    estd:: vector_t<double> helper = direction;
+    estd::vector_t<double> helper = direction;
 
     //The metod itself
     for (size_t i = 1; i <= itmax; ++i) {
@@ -606,7 +584,7 @@ std::pair<double,std::size_t> FDM::PCG (
         //update solution vector
         estd::axpy(alpha,direction,u);
 
-        //update residual, save dotproduct of old one for beta-update
+        //update residual, save dotproduct of old vectors for beta-update
         double beta_updater = estd::dot_product(residual,helper);
         estd::axpy(-1*alpha,temp,residual);
 
