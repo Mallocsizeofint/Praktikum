@@ -297,7 +297,7 @@ void FDM::apply_bottom_block(const size_t n,
         const estd::vector_t<double>& x, 
         estd::vector_t<double>& y) {
     y[n*n-n] = -x[n*n-2*n] + 4*x[n*n-n] - x[n*n-n+1];
-    for(size_t i = n*n - n; i < n*n - 1; ++i)
+    for(size_t i = n*n - n + 1; i < n*n - 1; ++i)
         y[i] = -x[i-n] - x[i-1] + 4*x[i] - x[i+1];
     //Special case last row
     y[n*n - 1] = -x[n*n-n-1] - x[n*n-2] + 4*x[n*n-1];

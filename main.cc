@@ -6,6 +6,7 @@
 #include "laplace_matrix_jacobi.hpp"
 #include "laplace_matrix_SSOR.hpp"
 #include "laplace_matrix_IC.hpp"
+#include "multigrid.hpp"
 #include "my_vector.hpp"
 #include "vector_routines.hpp"
 
@@ -29,7 +30,7 @@ double g_blatt1 (double x, double y) {
 }
 
 
-
+/*
 //Main Blatt 1
 int main () {
     size_t n;
@@ -55,7 +56,7 @@ int main () {
     createVTKFile(n,solution.data());
 
 }
-
+*/
 
 /*
 //Main Blatt 2
@@ -143,7 +144,7 @@ int main () {
 }
 */
 
-/*
+
 //Main Blatt 3 SSOR
 int main () {
     size_t n;
@@ -169,7 +170,7 @@ int main () {
     createVTKFile(n,solution.data());
 
 }
-*/
+
 
 /*
 //Main Blatt 3 IC
@@ -198,6 +199,38 @@ int main () {
 
 }
 */
+
+/*
+//Main Blatt 4
+int main () {
+    size_t n;
+    double eps;
+    std::cout << "Number of Nodes per row:\n";
+    std::cin >> n;
+    std::cout << "Required precision for TGM:\n";
+    std::cin >> eps;
+    estd::vector_t<double> rhs(n*n);
+    estd::vector_t<double> solution(n*n);
+
+    std::cout << "Setting RHS... " << std::flush;
+    FDM::init_rhs(n,rhs,g_blatt1);
+    //init_rhs(n,rhs,[](double x,double y){return x + y;});
+    std::cout << "Done.\nSolving with TGM... "<< std::flush;
+    auto x = FDM::TGM(n,solution,rhs,eps);
+    std::cout << "done.\n";
+
+    
+    std::cout << "\nIterations needed: " << x << "\n"; 
+    createVTKFile(n,solution.data());
+
+}
+*/
+
+
+
+
+
+
 
 /*
 //small test

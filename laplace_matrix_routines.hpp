@@ -14,7 +14,7 @@ namespace FDM {
 
 //! Applies the Laplace-Operator to a vector
 /*!
- \param n number of nodes per row, Laplace-Operator is n x n
+ \param n number of nodes per row, Laplace-Operator is n*n x n*n
  \param x the vector to be applied to the Laplace-Operator
  \param y the vector the result is saved to
 */

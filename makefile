@@ -2,8 +2,8 @@ STANDARDFLAG = -std=c++11
 CXX = clang++
 CXXFLAGS = -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-float-equal $(STANDARDFLAG)
 LD  = clang++
-DEBUG = -DENABLE_RANGE_CHECK -O3
-RELEASE = -DNDEBUG -O3
+DEBUG = -DENABLE_RANGE_CHECK -O3 -march=native
+RELEASE = -DNDEBUG -O3 -march=native
 TARGET = blatt1.exe
 SOURCES := $(wildcard *.cc)        
 MYOBJS := $(patsubst %.cc, %.o, $(SOURCES))
@@ -34,4 +34,4 @@ depend: .depend
 	$(CXX) $(CXXFLAGS) -o $@ $<
  
 clean:
-	rm -f .depend *.o
+	rm -f .depend $(MYOBJS)
