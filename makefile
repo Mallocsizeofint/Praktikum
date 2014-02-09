@@ -10,7 +10,7 @@ MYOBJS := $(patsubst %.cc, %.o, $(SOURCES))
 KUSKOBJS = cputime.o createVTKFile.o
 OBJS = $(MYOBJS) $(KUSKOBJS)
 
-RELEASE_DEBUG_FLAGS = $(DEBUG)
+RELEASE_DEBUG_FLAGS = $(RELEASE)
 
 all: $(TARGET)
 

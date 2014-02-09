@@ -66,6 +66,27 @@ std::pair<double,std::size_t> gauss_seidel (
         const std::size_t itmax,
         const double omega);
 
+
+//! Solves the implict euler system using the SOR-method
+/*!
+ \param n the system must be n*n x n*n
+ \param f the RHS of the system
+ \param u start/solution vector
+ \param epsmin the accuracy to achieve
+ \param itmax maximum number of iterations to do
+ \param omega the relaxions parameter
+ \param ht the stepsize for euler
+ \return a \c std::pair (acuracy reached, iterations needed)
+*/
+ std::pair<double,std::size_t> SOR_euler (
+        const std::size_t n,
+        const estd::vector_t<double>& f,
+        estd::vector_t<double>& u,
+        const double epsmin,
+        const std::size_t itmax,
+        const double omega,
+        const double ht);
+
  //! Solves the linear equation system using the CG-method
  /*!
   \param L the LHS-matrix of the system

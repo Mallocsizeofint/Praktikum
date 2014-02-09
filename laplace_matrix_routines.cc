@@ -97,6 +97,26 @@ namespace FDM {
         estd::vector_t<double>& u,
         const double omega);
 
+     //returns infnorm of new - old, gets updated vec
+    double SOR_euler_top_block(
+        const size_t n,
+        const estd::vector_t<double>& f,
+        estd::vector_t<double>& u,
+        const double omega,
+        const double ht);
+    double SOR_euler_middle_blocks(
+        const size_t n,
+        const estd::vector_t<double>& f,
+        estd::vector_t<double>& u,
+        const double omega,
+        const double ht);
+    double SOR_euler_bottom_block(
+        const size_t n,
+        const estd::vector_t<double>& f,
+        estd::vector_t<double>& u,
+        const double omega,
+        const double ht);
+
 }
 
 double FDM::gauss_seidel_top_block(
@@ -257,6 +277,99 @@ double FDM::SOR_middle_blocks(
         //last line block 1
         new_entry = (f[(j+1)*n-1] + u[(j+1)*n-2]  
             + u[(j)*n-1] + u[(j+2)*n-1]) / 4 * omega
+            + (1 - omega) * u[(j+1)*n - 1];
+        infnorm = std::max(infnorm,
+            std::abs(new_entry - u[(j+1)*n-1]));
+        u[(j+1)*n-1] = new_entry;
+    }
+    return infnorm;
+}
+
+
+double FDM::SOR_euler_top_block(
+        const size_t n,
+        const estd::vector_t<double>& f,
+        estd::vector_t<double>& u,
+        const double omega,
+        const double ht) {
+             
+    //first line
+    double new_entry = (f[0] + ht*(u[1] + u[n]))/(4*ht + 1)*omega
+        + (1 - omega)*u[0];
+    double infnorm = std::abs(new_entry - u[0]);
+    u[0] = new_entry;
+    for (size_t i = 1; i < n - 1; ++i) {           //middle line of first block
+        new_entry = (f[i] + ht * (u[i-1] + u[i+1] + u[i+n])) / (4*ht + 1) * omega
+            + (1-omega) * u[i];
+        infnorm = std::max(infnorm,
+            std::abs(new_entry - u[i]));
+        u[i] = new_entry;
+    }
+    //last line block 1
+    new_entry = (f[n-1] + ht * (u[n-2]  + u[2*n-1])) / (4*ht + 1) * omega
+        + (1 - omega) * u[n-1];
+    infnorm = std::max(infnorm,
+        std::abs(new_entry - u[n-1]));
+    u[n-1] = new_entry;
+    return infnorm;
+}
+
+
+
+double FDM::SOR_euler_bottom_block(
+        const size_t n,
+        const estd::vector_t<double>& f,
+        estd::vector_t<double>& u,
+        const double omega,
+        const double ht) {
+             
+    //first line
+    double new_entry = (f[n*n-n] + ht * (u[n*n-n+1] + u[n*n-2*n]))/(4*ht + 1) * omega
+        + (1 - omega) * u[n*n-n];
+    double infnorm = std::abs(new_entry - u[n*n-n]);
+    u[n*n-n] = new_entry;
+    for (size_t i = n*n-n+1; i < n*n - 1; ++i) {           //middle line of first block
+        new_entry = (f[i] + ht * (u[i-1] + u[i+1] + u[i-n])) / (4*ht+1) * omega
+            + (1-omega) * u[i];
+        infnorm = std::max(infnorm,
+            std::abs(new_entry - u[i]));
+        u[i] = new_entry;
+    }
+    //last line block 1
+    new_entry = (f[n*n-1] + ht*(u[n*n-2]  + u[n*n-n-1])) / (4*ht+1) * omega
+        + (1 - omega) * u[n*n-1];
+    infnorm = std::max(infnorm,
+        std::abs(new_entry - u[n*n-1]));
+    u[n*n-1] = new_entry;
+    return infnorm;
+}
+double FDM::SOR_euler_middle_blocks(
+        const size_t n,
+        const estd::vector_t<double>& f,
+        estd::vector_t<double>& u,
+        const double omega,
+        const double ht) {
+    double infnorm{0};
+    //for all middle blocks
+    for (size_t j = 1; j < n-1; ++j) {     
+        //first line
+        double new_entry = (f[j*n] + ht * (u[j*n-n] 
+            + u[j*n+n] + u[j*n+1]))/(4*ht+1) * omega
+            + (1 - omega) * u[j*n];
+        infnorm = std::max(infnorm,
+            std::abs(new_entry - u[j*n]));
+        u[j*n] = new_entry;
+        for (size_t i = j*n+1; i < (j+1)*n - 1; ++i) {           //middle line of first block
+            new_entry = (f[i] + ht * (u[i-1] + u[i+1] 
+                + u[i-n] + u[i+n])) / (4*ht+1)* omega
+                + (1-omega) * u[i];
+            infnorm = std::max(infnorm,
+                std::abs(new_entry - u[i]));
+            u[i] = new_entry;
+        }
+        //last line block 1
+        new_entry = (f[(j+1)*n-1] + ht*(u[(j+1)*n-2]  
+            + u[(j)*n-1] + u[(j+2)*n-1])) / (4*ht+1) * omega
             + (1 - omega) * u[(j+1)*n - 1];
         infnorm = std::max(infnorm,
             std::abs(new_entry - u[(j+1)*n-1]));
@@ -494,6 +607,44 @@ std::pair<double,size_t> FDM::SOR (
         infnorm = SOR_top_block(n,f,u,omega);
         infnorm = std::max(infnorm, SOR_middle_blocks(n,f,u,omega));
         infnorm = std::max(infnorm, SOR_bottom_block(n,f,u,omega));
+
+        //Check convergence
+        if (infnorm < epsmin)
+            return {infnorm,i};
+    }
+
+    //itmax iterations done
+    return {infnorm,itmax};
+}
+
+
+//Solves L_h*u=x, returns (achieved acuracy, needed iterations)
+std::pair<double,size_t> FDM::SOR_euler (
+        const size_t n,
+        const estd::vector_t<double>& f,
+        estd::vector_t<double>& u,
+        const double epsmin,
+        const size_t itmax,
+        const double omega,
+        const double ht) { 
+
+    //dimension check:
+    assert(f.size() == u.size() && u.size() == n*n);
+
+    //convergence check
+    assert((omega > 0) && (omega < 2));
+
+    //variable to store the current acuracy
+    double infnorm;
+
+    //The SOR-method
+    for(size_t i = 1; i <= itmax; ++i) {
+        infnorm = 0;        
+        
+        //calculate new iteration-vector
+        infnorm = SOR_euler_top_block(n,f,u,omega,ht);
+        infnorm = std::max(infnorm, SOR_euler_middle_blocks(n,f,u,omega,ht));
+        infnorm = std::max(infnorm, SOR_euler_bottom_block(n,f,u,omega,ht));
 
         //Check convergence
         if (infnorm < epsmin)
