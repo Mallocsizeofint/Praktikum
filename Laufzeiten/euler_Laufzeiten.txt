@@ -1,0 +1,10 @@
+Laufzeiten für explizit und implizit Euler für 200 Zeitschritte und n = 257
+für verschiedene Schrittweiten
+
+Weite	Expl	Impl
+1	0.068	12.933
+0.5	0.057	10.385
+0.25	0.057	6.441
+0.125	0.058	8.319
+0.0625	0.058	8.003
+0.03125	0.057	7.295

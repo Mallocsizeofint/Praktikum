@@ -1,0 +1,6 @@
+Laufzeiten für V und W-Zyklus mit Tiefe 4 und Genauigkeit 1e-6
+
+n	V-Zyklus	W-Zyklus
+65	260	0.187	120	0.119
+129	747	2.118	228	0.915
+257	2102	24.403	402	6.601

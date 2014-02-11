@@ -1,0 +1,8 @@
+Laufzeiten für Gauss-Seidel, SOR mit optimalem epsilon, CG
+und Jacobi-PCG
+
+n	It-GS	Zeit	It-SOR	Zeit	It-CG	Zeit	It-PCG	Zeit PCG
+50	2121	0.051	141	0.004	128	0.003	128	0.004
+100	6899	0.574	261	0.031	251	0.026	251	0.031
+200	21668	7.369	481	0.233	494	0.215	494	0.263
+400	63696	88.553	920	1.815	974	2.045	974	2.787

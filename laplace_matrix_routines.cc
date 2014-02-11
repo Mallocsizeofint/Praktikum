@@ -46,25 +46,6 @@ namespace FDM {
        const estd::vector_t<double>& x,
        estd::vector_t<double>& y);
 
-    //calculates the j-th entry of the gauss-Seidel vector
-    double gauss_seidel_entry (
-        const size_t n,             //The system is n*nxn*n
-        const estd::vector_t<double>& f,   //RHS of the system
-        const estd::vector_t<double>& u,   //entries 0 to j-1 contain entries
-                                    //of the updated vector, j to n-1
-                                    //entries of the old one
-        const size_t j);           //The entry to calculate
-
-    //calculates the j-th entry of the SOR vector
-    double SOR_entry (
-        const size_t n,             //The system is n*nxn*n
-        const estd::vector_t<double>& f,   //RHS of the system
-        const estd::vector_t<double>& u,   //entries 0 to j-1 contain entries
-                                    //of the updated vector, j to n-1
-                                    //entries of the old one
-        const size_t j,              //The entry to calculate 
-        const double omega);        //The relaxion parameter
-
 
     //returns infnorm of new - old, gets updated vec
     double gauss_seidel_top_block(
@@ -468,84 +449,6 @@ void FDM::init_rhs(const size_t n,   //Number of nodes per row
     f[n*n-1] = .5*(f[n*n-n-1] + f[n*n-2]);
 }
 
-//calculates the j-th entry of the gauss-seidel vector
-double FDM::gauss_seidel_entry (
-        const size_t n,             //The system is n*nxn*n
-        const estd::vector_t<double>& f,   //RHS of the system
-        const estd::vector_t<double>& u,   //entries 0 to j-1 contain entries
-                                    //of the updated vector, j to n-1
-                                    //entries of the old one
-        const size_t j) {           //The entry to calculate
-
-        double sum{0};
-
-        if (j < n) {                    //first block
-            if (j == 0)                 //first line
-                sum = -u[1] - u[n];
-            else if (j < n-1)           //middle line of first block
-                sum = -u[j-1] - u[j+1] - u[j+n];
-            else                        //last line block 1
-              sum = -u[j-1] - u[j+n];
-        }
-        else if (j < n*n-n) {           //middle block
-            if (j%n == 0)               //first line of block
-                sum = -u[j-n] - u[j+1] - u[j+n];
-            else if ((j+1)%n == 0)        //last line of block
-                sum = -u[j-n] - u[j-1] - u[j+n];
-            else                        //middle line
-                sum = -u[j-n] - u[j-1] - u[j+1] - u[j+n];
-        }
-        else  {                         //last block
-            if (j == n*n -n)            //first line of block
-                sum = -u[j-n] - u[j+1];
-            else if(j == n*n - 1)       //last line
-                sum = -u[j-n] - u[j-1];
-            else                        //middle line of last block
-                sum = -u[j-n] - u[j-1] - u[j+1];
-        }
-
-        return (f[j]-sum)/4;
-}
-
-//calculates the j-th entry of the gauss-seidel vector
-double FDM::SOR_entry (
-        const size_t n,             //The system is n*nxn*n
-        const estd::vector_t<double>& f,   //RHS of the system
-        const estd::vector_t<double>& u,   //entries 0 to j-1 contain entries
-                                    //of the updated vector, j to n-1
-                                    //entries of the old one
-        const size_t j,              //The entry to calculate
-        const double omega) {       //the relaxion parameter
-
-        double sum{0};
-
-        if (j < n) {                    //first block
-            if (j == 0)                 //first line
-                sum = -u[1] - u[n];
-            else if (j < n-1)           //middle line of first block
-                sum = -u[j-1] - u[j+1] - u[j+n];
-            else                        //last line block 1
-              sum = -u[j-1] - u[j+n];
-        }
-        else if (j < n*n-n) {           //middle block
-            if (j%n == 0)               //first line of block
-                sum = -u[j-n] - u[j+1] - u[j+n];
-            else if ((j+1)%n == 0)        //last line of block
-                sum = -u[j-n] - u[j-1] - u[j+n];
-            else                        //middle line
-                sum = -u[j-n] - u[j-1] - u[j+1] - u[j+n];
-        }
-        else  {                         //last block
-            if (j == n*n -n)            //first line of block
-                sum = -u[j-n] - u[j+1];
-            else if(j == n*n - 1)       //last line
-                sum = -u[j-n] - u[j-1];
-            else                        //middle line of last block
-                sum = -u[j-n] - u[j-1] - u[j+1];
-        }
-
-        return (f[j]-sum)/4*omega + (1-omega)*u[j];
-}
 
 
 //Solves L_h*u=x, returns (achieved acuracy, needed iterations)

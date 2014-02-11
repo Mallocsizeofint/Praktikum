@@ -1,0 +1,7 @@
+Laufzeiten für das Gauss-Seidel Verfahren mit epsilon = 1e-4:
+
+n	It	Zeit in Sek
+50 	2121 	0.057
+100 	6899 	0.576
+200 	21668 	7.368
+400 	63696 	88.629 

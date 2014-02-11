@@ -75,11 +75,11 @@ int main () {
 //Main for time-tests:
 int main () {
 
-    std::ofstream out ("FMGM_Laufzeiten.txt");
+    std::ofstream out ("euler_Laufzeiten.txt");
 
-    for (size_t i = 64; i < 512; i*=2) {
+    for (double stepsize = 1; stepsize > 1./50; stepsize/=2) {
 
-        size_t n =  i+1;
+        size_t n =  257;
 
         estd::vector_t<double> rhs(n*n);
 
@@ -93,59 +93,26 @@ int main () {
         
 
         auto start = cputime(0.0);
-        FDM::FMGM(n,solution,rhs,4);
-        auto x = FDM::MGM(n,solution,rhs,1e-6,4,1);
+        FDM::EulerExpl(257,solution,rhs,stepsize,200);
         auto ende = cputime(start);
         std::fill(solution.begin(),solution.end(),0);
 
-        out << n << '\t' << x << '\t' << ende 
-            << "\n";
-
-        start = cputime(0.0);
-        FDM::FMGM(n,solution,rhs,4);
-        x = FDM::MGM(n,solution,rhs,1e-6,4,2);
-        ende = cputime(start);
-        //std::fill(solution.begin(),solution.end(),0);
-
-        out  << x << '\t' << ende 
-            << "\n";
-        
-
-        
-        FDM::LaplaceMatrix L{i};
-        auto start = cputime(0.0);
-        auto x = FDM::CG(L,rhs,solution,eps,i*i*i*i);
-        auto ende = cputime(start);
-        std::fill(solution.begin(),solution.end(),0);
-
-        out << i <<  '\t' << eps <<'\t' << x.second << '\t' << ende 
+        out << stepsize << '\t' << ende 
             << "\t";
 
-        FDM::LaplaceMatrixSSOR L2{i};
         start = cputime(0.0);
-        x = FDM::PCG(L2,rhs,solution,eps,i*i*i*i);
+        FDM::EulerImpl(257,solution,rhs,stepsize,200);
         ende = cputime(start);
-        std::fill(solution.begin(),solution.end(),0);
 
-        out << i << '\t' << eps <<'\t' << x.second << '\t' << ende 
-            << "\t";
-
-        
-        start = cputime(0.0);
-        x = FDM::PCG(L3,rhs,solution,eps,i*i*i*i);
-        ende = cputime(start);
-        std::fill(solution.begin(),solution.end(),0);
-
-        out << i <<  '\t' << eps <<'\t' << x.second << '\t' << ende 
+        out << ende 
             << "\n";
 
-        }
-
-        std::cerr  << i;
+        
+        std::cerr  << stepsize;
         
     }
-}
-*/
+}*/
+
 
 /*
 //Main Blatt 2
@@ -376,7 +343,7 @@ int main () {
 }
 */
 
-
+/*
 //expl euler
 int main () {
     size_t n, num_steps;
@@ -400,10 +367,10 @@ int main () {
     FDM::EulerExpl(n,solution2,rhs,stepsize,num_steps);
     std::cout << "done.\n";
 }
+*/
 
 
 
-/*
 //impl euler
 int main () {
     size_t n, num_steps;
@@ -426,19 +393,6 @@ int main () {
     FDM::EulerImpl(n,solution2,rhs,stepsize,num_steps);
     std::cout << "done.\n";
 }
-*/
 
 
 
-
-/*
-//small test
-int main () {
-    estd::vector_t<double> test1(5,2), test2(5,4);
-    estd::axpy(-1,test2,test1);
-
-    for (auto v:test1)
-        std::cout << v;
-    std::cout << '\n' << estd::dot_product(test1,test1) << '\n';
-}
-*/

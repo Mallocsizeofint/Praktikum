@@ -41,13 +41,13 @@ void FDM::EulerExpl (const std::size_t n,
 
 	//Do desired number of steps and write results to VTK-File
 	for (size_t i = 0; i < iter; ++i) {
-		//u = expl_euler_step(n,u,f,ht);
-		estd::vector_t<double> temp (n*n);
+		u = expl_euler_step(n,u,f,ht);
+		/*estd::vector_t<double> temp (n*n);
 		apply_laplace(n,u,temp);
 		estd::scale(-1*ht,temp);
 		estd::axpy(1,u,temp);
 		estd::axpy(ht,f,temp);
-		u=temp;
+		u=temp;*/
 		createVTKFile(n,u.data());
 	}
 
@@ -69,9 +69,9 @@ void FDM::EulerImpl (const std::size_t n,
 
 	for (size_t i = 0; i < iter; ++i) {
 		estd::vector_t<double> rhs = u;
-		estd::axpy(ht,f,u);
+		estd::axpy(ht,f,rhs);
 
-		MGM_euler(n,rhs,u,1e-4,3,1,ht);
+		MGM_euler(n,u,rhs,1e-4,3,1,ht);
 		createVTKFile(n,u.data());
 	}
 
